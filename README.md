@@ -7,7 +7,7 @@
 ## Deployment
 - Click the `Launch Stack` button and deploy the stack into your account.
 
-[![aSlack CloudFormation](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?#/stacks/new?stackName=aSlack&templateURL=s3://a-slack/source/aSlack.template.json)
+[![aSlack CloudFormation](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?#/stacks/new?stackName=aSlack&templateURL=https://s3.amazonaws.com/a-slack/source/aSlack.template.json)
 
 ## Generate Slack API Token
 - Go to [https://<YOUR_SLACK_TEAM>.slack.com/apps/new/A0F7YS25R-bots]()
