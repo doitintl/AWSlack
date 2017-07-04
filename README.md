@@ -5,7 +5,7 @@
 - Any `AWS` supported browser. ( Chrome / Firefox / Safari etc. )
 
 ## Deployment
-- Click the `Launch Stack` button and deploy the stack into your account.
+- Hold down the `Ctrl` button and Click the `Launch Stack` button to deploy the stack into your account:
 
 <a href="https://console.aws.amazon.com/cloudformation/home?#/stacks/new?stackName=aSlack&templateURL=https://s3.amazonaws.com/a-slack/source/aSlack.template.json" target="_blank"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"></img></a>
 
