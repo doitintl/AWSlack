@@ -8,19 +8,23 @@ function evalMessage(message, data) {
     return eval(`'use strict';\`${message}\`;`);
 }
 
-exports.pubsubLogSink = function (event, callback) {
-    const base64 = require('base-64');
-    let data = JSON.parse(base64.decode(event.data.data));
+const AWS = require('aws-sdk');
+const Slack = require('slack-node');
+const dynamodb = new AWS.DynamoDB();
 
+exports.handleEvent = function (event, context, callback) {
+    console.log(`event: ${JSON.stringify(event)}`);
     Promise.all([
         getConfig(),
         getTests()
     ])
         .then(([config, tests]) => {
+            console.log(`config: ${JSON.stringify(config)} , tests: ${JSON.stringify(tests)}`);
             return Promise.all(tests.map(test => {
-                let clonedData = JSON.parse(JSON.stringify(data));
+                let clonedData = JSON.parse(JSON.stringify(event));
                 if (runTest(test.test, clonedData)) {
                     let message = evalMessage(test.message, clonedData);
+                    console.log(`message: ${message}`);
                     return sendSlack(test.slackChannel, message, config.slackAPIToken);
                 }
                 else {
@@ -29,51 +33,54 @@ exports.pubsubLogSink = function (event, callback) {
             }));
         })
         .then(() => {
-            callback();
+            callback(null, {});
+        })
+        .catch(err => {
+            callback(err);
         });
 };
 
 function getConfig() {
-    const Datastore = require('@google-cloud/datastore');
-    const ds = Datastore();
-    const query = ds.createQuery(['Config']);
-    return runDSQuery(ds, query).then(configsArray => {
-        return configsArray.reduce((configs, config) => {
-            configs[config.name] = config.value;
+    return readDynamo("Configs").then(data => {
+        return data.reduce((configs, config) => {
+            configs[config.name.S] = config.value.S;
             return configs;
         }, {});
     });
 }
 
 function getTests() {
-    const Datastore = require('@google-cloud/datastore');
-    const ds = Datastore();
-    const query = ds.createQuery(['Test']);
-    return runDSQuery(ds, query);
+    return readDynamo("Tests").then(data => {
+        return data.map(test => ({
+            test: test.test.S,
+            message: test.message.S,
+            slackChannel: test.slackChannel.S
+        }));
+    });
 }
 
-function runDSQuery(ds, query) {
-    const Datastore = require('@google-cloud/datastore');
+function readDynamo(tableName) {
     return new Promise((resolve, reject) => {
-        ds.runQuery(query, (err, entities, nextQuery) => {
-            if (err) {
-                reject(err);
-            }
-            const hasMore = nextQuery.moreResults !== Datastore.NO_MORE_RESULTS ? nextQuery.endCursor : false;
-            if (hasMore) {
-                runDSQuery(ds, nextQuery).then(moreEntities => {
-                    resolve(entities.concat(moreEntities));
-                });
-            }
-            else {
-                resolve(entities);
-            }
-        });
+        try {
+            dynamodb.scan({
+                TableName: tableName
+            }, function (err, data) {
+                if (!!err) {
+                    reject(err);
+                }
+                else {
+                    resolve(data.Items);
+                }
+            });
+        }
+        catch (e) {
+            console.log(e);
+            reject(e);
+        }
     });
 }
 
 function sendSlack(channel, message, apiToken) {
-    const Slack = require('slack-node');
 
     return new Promise((resolve, reject) => {
         const slack = new Slack(apiToken);

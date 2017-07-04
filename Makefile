@@ -1,7 +1,7 @@
 all:
 
 zip-code:
-	zip code.zip index.js package.json
+	zip -r code.zip index.js package.json node_modules
 
 deploy-version: zip-code
 	aws s3 cp aSlack.template.json s3://a-slack/source/ --acl public-read

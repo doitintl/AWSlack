@@ -75,6 +75,16 @@
                                         "logs:*"
                                     ],
                                     "Resource": "arn:aws:logs:*:*:*"
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "dynamodb:Scan"
+                                    ],
+                                    "Resource": [
+                                        "arn:aws:dynamodb:*:*:table/Configs",
+                                        "arn:aws:dynamodb:*:*:table/Tests"
+                                    ]
                                 }
                             ]
                         }
@@ -90,9 +100,13 @@
                     "S3Key": "source/code.zip"
                 },
                 "Description": "Handles events by sending Slack notifications.",
-                // "Environment": Environment,
                 "FunctionName": "a-slack",
                 "Handler": "index.handleEvent",
+                "Environment": {
+                    "Variables": {
+                        "key": "value"
+                    }
+                },
                 "Role": {
                     "Fn::GetAtt": [
                         "LambdaExecutionRole",
@@ -100,6 +114,50 @@
                     ]
                 },
                 "Runtime": "nodejs6.10"
+            }
+        },
+        "ConfigTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+                "AttributeDefinitions": [
+                    {
+                        "AttributeName": "name",
+                        "AttributeType": "S"
+                    }
+                ],
+                "KeySchema": [
+                    {
+                        "AttributeName": "name",
+                        "KeyType": "HASH"
+                    }
+                ],
+                "ProvisionedThroughput": {
+                    "ReadCapacityUnits": 10,
+                    "WriteCapacityUnits": 1
+                },
+                "TableName": "Configs"
+            }
+        },
+        "TestTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+                "AttributeDefinitions": [
+                    {
+                        "AttributeName": "name",
+                        "AttributeType": "S"
+                    }
+                ],
+                "KeySchema": [
+                    {
+                        "AttributeName": "name",
+                        "KeyType": "HASH"
+                    }
+                ],
+                "ProvisionedThroughput": {
+                    "ReadCapacityUnits": 10,
+                    "WriteCapacityUnits": 1
+                },
+                "TableName": "Tests"
             }
         }
     }
