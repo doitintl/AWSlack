@@ -1,0 +1,164 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "aSlack AWS CloudFormation Template: This template deploys Slack integration into your account Please see https://github.com/doitintl/aSlack more information.  **WARNING** You will be billed for the AWS resources used if you create a stack from this template.",
+    "Resources": {
+        "EventRule": {
+            "Type": "AWS::Events::Rule",
+            "Properties": {
+                "Description": "EventRule",
+                "EventPattern": {
+                    "account": [
+                        {
+                            "Ref": "AWS::AccountId"
+                        }
+                    ]
+                },
+                "State": "ENABLED",
+                "Targets": [
+                    {
+                        "Arn": {
+                            "Fn::GetAtt": [
+                                "EventHandler",
+                                "Arn"
+                            ]
+                        },
+                        "Id": "TargetFunctionV1"
+                    }
+                ]
+            }
+        },
+        "PermissionForEventsToInvokeLambda": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+                "FunctionName": {
+                    "Ref": "EventHandler"
+                },
+                "Action": "lambda:InvokeFunction",
+                "Principal": "events.amazonaws.com",
+                "SourceArn": {
+                    "Fn::GetAtt": [
+                        "EventRule",
+                        "Arn"
+                    ]
+                }
+            }
+        },
+        "LambdaExecutionRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "lambda.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                    ]
+                },
+                "Path": "/",
+                "Policies": [
+                    {
+                        "PolicyName": "root",
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "logs:*"
+                                    ],
+                                    "Resource": "arn:aws:logs:*:*:*"
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "dynamodb:Scan"
+                                    ],
+                                    "Resource": [
+                                        "arn:aws:dynamodb:*:*:table/Configs",
+                                        "arn:aws:dynamodb:*:*:table/Tests"
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "EventHandler": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+                "Code": {
+                    "S3Bucket": "a-slack",
+                    "S3Key": "source/code.zip"
+                },
+                "Description": "Handles events by sending Slack notifications.",
+                "FunctionName": "a-slack",
+                "Handler": "index.handleEvent",
+                "Environment": {
+                    "Variables": {
+                        "key": "value"
+                    }
+                },
+                "Role": {
+                    "Fn::GetAtt": [
+                        "LambdaExecutionRole",
+                        "Arn"
+                    ]
+                },
+                "Runtime": "nodejs6.10"
+            }
+        },
+        "ConfigTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+                "AttributeDefinitions": [
+                    {
+                        "AttributeName": "name",
+                        "AttributeType": "S"
+                    }
+                ],
+                "KeySchema": [
+                    {
+                        "AttributeName": "name",
+                        "KeyType": "HASH"
+                    }
+                ],
+                "ProvisionedThroughput": {
+                    "ReadCapacityUnits": 10,
+                    "WriteCapacityUnits": 1
+                },
+                "TableName": "Configs"
+            }
+        },
+        "TestTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+                "AttributeDefinitions": [
+                    {
+                        "AttributeName": "name",
+                        "AttributeType": "S"
+                    }
+                ],
+                "KeySchema": [
+                    {
+                        "AttributeName": "name",
+                        "KeyType": "HASH"
+                    }
+                ],
+                "ProvisionedThroughput": {
+                    "ReadCapacityUnits": 10,
+                    "WriteCapacityUnits": 1
+                },
+                "TableName": "Tests"
+            }
+        }
+    }
+}
