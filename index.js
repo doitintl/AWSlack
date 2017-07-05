@@ -13,18 +13,16 @@ const Slack = require('slack-node');
 const dynamodb = new AWS.DynamoDB();
 
 exports.handleEvent = function (event, context, callback) {
-    console.log(`event: ${JSON.stringify(event)}`);
+    console.log(`event data: ${JSON.stringify(event)}`);
     Promise.all([
         getConfig(),
         getTests()
     ])
         .then(([config, tests]) => {
-            console.log(`config: ${JSON.stringify(config)} , tests: ${JSON.stringify(tests)}`);
             return Promise.all(tests.map(test => {
                 let clonedData = JSON.parse(JSON.stringify(event));
                 if (runTest(test.test, clonedData)) {
                     let message = evalMessage(test.message, clonedData);
-                    console.log(`message: ${message}`);
                     return sendSlack(test.slackChannel, message, config.slackAPIToken);
                 }
                 else {
@@ -74,14 +72,33 @@ function readDynamo(tableName) {
             });
         }
         catch (e) {
-            console.log(e);
+            reject(e);
+        }
+    });
+}
+
+function writeDynamo(tableName, item) {
+    return new Promise((resolve, reject) => {
+        try {
+            dynamodb.put({
+                TableName: tableName,
+                Item: item
+            }, function (err, data) {
+                if (!!err) {
+                    reject(err);
+                }
+                else {
+                    resolve(data);
+                }
+            });
+        }
+        catch (e) {
             reject(e);
         }
     });
 }
 
 function sendSlack(channel, message, apiToken) {
-
     return new Promise((resolve, reject) => {
         const slack = new Slack(apiToken);
         slack.api('chat.postMessage', {
@@ -97,3 +114,17 @@ function sendSlack(channel, message, apiToken) {
         });
     });
 }
+
+exports.initDynamoDB = function (event, context, callback) {
+    console.log('initDynamoDB');
+    /*    Promise.all([
+            writeDynamo("Configs", { name: "slackAPIToken", value: "" }),
+            writeDynamo("Tests", { name: "all", test: "true", message: "this was an event: ${JSON.stringify($)}", slackChannel: "aws" })
+        ])
+            .then(() => {
+                callback(null, {});
+            })
+            .catch(err => {
+                callback(err);
+            });*/
+};

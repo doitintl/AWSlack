@@ -79,7 +79,7 @@
                                 {
                                     "Effect": "Allow",
                                     "Action": [
-                                        "dynamodb:Scan"
+                                        "dynamodb:*"
                                     ],
                                     "Resource": [
                                         "arn:aws:dynamodb:*:*:table/Configs",
@@ -158,6 +158,37 @@
                     "WriteCapacityUnits": 1
                 },
                 "TableName": "Tests"
+            }
+        },
+        "InitializeDynamoDBFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+                "Code": {
+                    "S3Bucket": "a-slack",
+                    "S3Key": "source/code.zip"
+                },
+                "Description": "Initilizes DynamoDB",
+                "FunctionName": "a-slack-init-db",
+                "Handler": "index.initDynamoDB",
+                "Role": {
+                    "Fn::GetAtt": [
+                        "LambdaExecutionRole",
+                        "Arn"
+                    ]
+                },
+                "Runtime": "nodejs6.10"
+            }
+        },
+        "AMIInfo": {
+            "Type": "Custom::AMIInfo",
+            "DependsOn" : ["ConfigTable","TestTable"],
+            "Properties": {
+                "ServiceToken": {
+                    "Fn::GetAtt": [
+                        "InitializeDynamoDBFunction",
+                        "Arn"
+                    ]
+                }
             }
         }
     }
