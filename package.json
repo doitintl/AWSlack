@@ -18,6 +18,8 @@
   "homepage": "https://github.com/doitintl/gcp-alert-service#readme",
   "dependencies": {
     "aws-sdk": "~2.80.0",
-    "slack-node": "~0.1.8"
+    "https": "^1.0.0",
+    "slack-node": "~0.1.8",
+    "url": "^0.11.0"
   }
 }
