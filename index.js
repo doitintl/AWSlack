@@ -80,7 +80,7 @@ function readDynamo(tableName) {
 function writeDynamo(tableName, item) {
     return new Promise((resolve, reject) => {
         try {
-            dynamodb.put({
+            dynamodb.putItem({
                 TableName: tableName,
                 Item: item
             }, function (err, data) {
@@ -117,29 +117,29 @@ function sendSlack(channel, message, apiToken) {
 
 exports.initDynamoDB = function (event, context, callback) {
     Promise.all([
-        writeDynamo("Configs", { name: "slackAPIToken", value: "" }),
-        writeDynamo("Tests", { name: "all", test: "true", message: "this was an event: ${JSON.stringify($)}", slackChannel: "aws" })
+        writeDynamo("Configs", { name: { S: "slackAPIToken" }, value: { S: "<YOUR_API_TOKEN>" } }),
+        writeDynamo("Tests", { name: { S: "all" }, test: { S: "true" }, message: { S: "this was an event: ${JSON.stringify($)}" }, slackChannel: { S: "aws" } })
     ])
         .then(() => {
             sendResponse(event, context, "SUCCESS", {});
+            callback(null, {});
         })
         .catch(err => {
             sendResponse(event, context, "FAILED", err);
+            callback(err);
         });
 };
 
 function sendResponse(event, context, responseStatus, responseData) {
     var responseBody = JSON.stringify({
         Status: responseStatus,
-        Reason: "See the details in CloudWatch Log Stream: " + context.logStreamName,
+        Reason: JSON.stringify(responseData),
         PhysicalResourceId: context.logStreamName,
         StackId: event.StackId,
         RequestId: event.RequestId,
         LogicalResourceId: event.LogicalResourceId,
         Data: responseData
     });
-
-    console.log("RESPONSE BODY:\n", responseBody);
 
     var https = require("https");
     var url = require("url");
@@ -156,18 +156,11 @@ function sendResponse(event, context, responseStatus, responseData) {
         }
     };
 
-    console.log("SENDING RESPONSE...\n");
-
     var request = https.request(options, function (response) {
-        console.log("STATUS: " + response.statusCode);
-        console.log("HEADERS: " + JSON.stringify(response.headers));
-        // Tell AWS Lambda that the function execution is done  
         context.done();
     });
 
     request.on("error", function (error) {
-        console.log("sendResponse Error:" + error);
-        // Tell AWS Lambda that the function execution is done  
         context.done();
     });
 
