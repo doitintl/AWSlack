@@ -120,7 +120,7 @@ exports.initDynamoDB = function (event, context, callback) {
         writeDynamo("Configs", { name: { S: "slackAPIToken" }, value: { S: "<YOUR_API_TOKEN>" } }),
         writeDynamo("Tests", { name: { S: "bucket_create" }, test: { S: "$.source==='aws.s3' && $.detail.eventName==='CreateBucket'" }, message: { S: "Bucket ${$.detail.requestParameters.bucketName} create in region ${$.region} by ${$.detail.userIdentity.arn}" }, slackChannel: { S: "aws" } }),
         writeDynamo("Tests", { name: { S: "bucket_delete" }, test: { S: "$.source==='aws.s3' && $.detail.eventName==='DeleteBucket'" }, message: { S: "Bucket ${$.detail.requestParameters.bucketName} deleted in region ${$.region} by ${$.detail.userIdentity.arn}" }, slackChannel: { S: "aws" } }),
-        writeDynamo("Tests", { name: { S: "lambda_update" }, test: { S: "$.source==='aws.lambda' && $.detail.eventName.includes('UpdateFunctionCode')" }, message: { S: "The Lambda function ${$.details.requestParameters.functionName} was updated by ${$.detail.userIdentity.arn}" }, slackChannel: { S: "aws" } }),
+        writeDynamo("Tests", { name: { S: "lambda_update" }, test: { S: "$.source==='aws.lambda' && $.detail.eventName.includes('UpdateFunctionCode')" }, message: { S: "The Lambda function ${$.detail.requestParameters.functionName} was updated by ${$.detail.userIdentity.arn}" }, slackChannel: { S: "aws" } }),
     ])
         .then(() => {
             sendResponse(event, context, "SUCCESS", {});
