@@ -11,7 +11,7 @@
 - Click `Next` and Confirm all steps until the stack deploys.
 
 ## Generate Slack API Token
-- Go to [https://<YOUR_SLACK_TEAM>.slack.com/apps/new/A0F7YS25R-bots]()
+- Go to https://<YOUR_SLACK_TEAM>.slack.com/apps/new/A0F7YS25R-bots
 - Enter a name for the bot to post with. (i.e. aws #account-id)
 - Click `Add bot integration`.
 - Wait until the UI displays the `API Token` and copy the string (i.e. xxxx-yyyyyyyyyyyy-zzzzzzzzzzzzzzzzzzzzzzzz).
