@@ -1,4 +1,4 @@
-# aSlack
+# AWSlack
 
 ## Prerequisites
 - A valid `AWS` Account.
@@ -7,7 +7,7 @@
 ## Deployment
 - Hold down the `Ctrl` button and Click the `Launch Stack` button to deploy the stack into your account:
 
-<a href="https://console.aws.amazon.com/cloudformation/home?#/stacks/new?stackName=aSlack&templateURL=https://s3.amazonaws.com/a-slack/source/aSlack.template.json" target="_blank"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"></img></a>
+<a href="https://console.aws.amazon.com/cloudformation/home?#/stacks/new?stackName=AWSlack&templateURL=https://s3.amazonaws.com/awslack/source/AWSlack.template.json" target="_blank"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"></img></a>
 - Click `Next` and Confirm all steps until the stack deploys.
 
 ## Generate Slack API Token
