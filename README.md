@@ -20,9 +20,9 @@
 ## Configure
 - Open your browser at [AWS DynamoDB Console](https://console.aws.amazon.com/dynamodb/home)
 - Switch to the `Tables` tab.
-- Select the `Configs` table and go to the `Items` tab.
+- Select the `awslack.configs` table and go to the `Items` tab.
 - Edit the slackAPIToken and set the `value` to the slack API token created in the previous step.
 - Save the new value.
-- Select the `Tests` table and go to the `Items tab.
+- Select the `awslack.tests` table and go to the `Items tab.
 - You can change or delete the existing tests.
 - You can also add new tests.
