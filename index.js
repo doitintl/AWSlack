@@ -51,7 +51,7 @@ exports.handleEvent = function (event, context, callback) {
 };
 
 function getConfig() {
-    return readDynamo("Configs").then(data => {
+    return readDynamo("awslack.configs").then(data => {
         return data.reduce((configs, config) => {
             configs[config.name.S] = config.value.S;
             return configs;
@@ -60,7 +60,7 @@ function getConfig() {
 }
 
 function getTests() {
-    return readDynamo("Tests").then(data => {
+    return readDynamo("awslack.tests").then(data => {
         return data.map(test => ({
             test: test.test.S,
             message: test.message.S,
@@ -129,14 +129,14 @@ function sendSlack(channel, message, apiToken) {
 
 exports.initDynamoDB = function (event, context, callback) {
     Promise.all([
-        writeDynamo("Configs", { name: { S: "slackAPIToken" }, value: { S: "<YOUR_API_TOKEN>" } }),
-        writeDynamo("Tests", { name: { S: "bucket_create" }, test: { S: "$.source==='aws.s3' && $.detail.eventName==='CreateBucket'" }, message: { S: "Bucket ${$.detail.requestParameters.bucketName} created in region ${$.region} by ${$.detail.userIdentity.arn}" }, slackChannel: { S: "aws" } }),
-        writeDynamo("Tests", { name: { S: "bucket_delete" }, test: { S: "$.source==='aws.s3' && $.detail.eventName==='DeleteBucket'" }, message: { S: "Bucket ${$.detail.requestParameters.bucketName} deleted in region ${$.region} by ${$.detail.userIdentity.arn}" }, slackChannel: { S: "aws" } }),
-        writeDynamo("Tests", { name: { S: "lambda_update" }, test: { S: "$.source==='aws.lambda' && $.detail.eventName.includes('UpdateFunctionCode')" }, message: { S: "The Lambda function ${$.detail.requestParameters.functionName} was updated by ${$.detail.userIdentity.arn}" }, slackChannel: { S: "aws" } }),
-        writeDynamo("Tests", { name: { S: "ec2_start" }, test: { S: "$.source==='aws.ec2' && $['detail-type']==='EC2 Instance State-change Notification' && $.detail.state==='running'" }, message: { S: "EC2 instance ${$.detail['instance-id']} started in region ${$.region}" }, slackChannel: { S: "aws" } }),
-        writeDynamo("Tests", { name: { S: "autoscale" }, test: { S:"$.source==='aws.autoscaling' && ( $['detail-type']==='EC2 Instance Terminate Successful' || $['detail-type']==='EC2 Instance Launch Successful')" }, message: { S: "Autoscaling event of type ${$['detail-type']} on group ${$.detail.AutoScalingGroupName} in region ${$.region} - Cause: ${$.detail.Cause}" }, slackChannel: { S: "aws" } }),
-        writeDynamo("Tests", { name: { S: "health" }, test: { S:"$.source==='aws.health'" }, message: { S: "Health event ${$.detail.eventTypeCode} in region ${$.region}" }, slackChannel: { S: "aws" } }),
-        writeDynamo("Tests", { name: { S: "signin" }, test: { S:"$.source==='aws.signin'" }, message: { S: "Sign-in event by ${$.detail.userIdentity.arn} from ${$.detail.sourceIPAddress} in region ${$.region} at ${$.detail.eventTime} with UserAgent: ${$.detail.userAgent}" }, slackChannel: { S: "aws" } })
+        writeDynamo("awslack.configs", { name: { S: "slackAPIToken" }, value: { S: "<YOUR_API_TOKEN>" } }),
+        writeDynamo("awslack.tests", { name: { S: "bucket_create" }, test: { S: "$.source==='aws.s3' && $.detail.eventName==='CreateBucket'" }, message: { S: "Bucket ${$.detail.requestParameters.bucketName} created in region ${$.region} by ${$.detail.userIdentity.arn}" }, slackChannel: { S: "aws" } }),
+        writeDynamo("awslack.tests", { name: { S: "bucket_delete" }, test: { S: "$.source==='aws.s3' && $.detail.eventName==='DeleteBucket'" }, message: { S: "Bucket ${$.detail.requestParameters.bucketName} deleted in region ${$.region} by ${$.detail.userIdentity.arn}" }, slackChannel: { S: "aws" } }),
+        writeDynamo("awslack.tests", { name: { S: "lambda_update" }, test: { S: "$.source==='aws.lambda' && $.detail.eventName.includes('UpdateFunctionCode')" }, message: { S: "The Lambda function ${$.detail.requestParameters.functionName} was updated by ${$.detail.userIdentity.arn}" }, slackChannel: { S: "aws" } }),
+        writeDynamo("awslack.tests", { name: { S: "ec2_start" }, test: { S: "$.source==='aws.ec2' && $['detail-type']==='EC2 Instance State-change Notification' && $.detail.state==='running'" }, message: { S: "EC2 instance ${$.detail['instance-id']} started in region ${$.region}" }, slackChannel: { S: "aws" } }),
+        writeDynamo("awslack.tests", { name: { S: "autoscale" }, test: { S:"$.source==='aws.autoscaling' && ( $['detail-type']==='EC2 Instance Terminate Successful' || $['detail-type']==='EC2 Instance Launch Successful')" }, message: { S: "Autoscaling event of type ${$['detail-type']} on group ${$.detail.AutoScalingGroupName} in region ${$.region} - Cause: ${$.detail.Cause}" }, slackChannel: { S: "aws" } }),
+        writeDynamo("awslack.tests", { name: { S: "health" }, test: { S:"$.source==='aws.health'" }, message: { S: "Health event ${$.detail.eventTypeCode} in region ${$.region}" }, slackChannel: { S: "aws" } }),
+        writeDynamo("awslack.tests", { name: { S: "signin" }, test: { S:"$.source==='aws.signin'" }, message: { S: "Sign-in event by ${$.detail.userIdentity.arn} from ${$.detail.sourceIPAddress} in region ${$.region} at ${$.detail.eventTime} with UserAgent: ${$.detail.userAgent}" }, slackChannel: { S: "aws" } })
         // ,writeDynamo("Tests", { name: { S: "all" }, test: { S: "true" }, message: { S: "${JSON.stringify($)}" }, slackChannel: { S: "aws-old" } })
     ])
         .then(() => {

@@ -82,8 +82,8 @@
                                         "dynamodb:*"
                                     ],
                                     "Resource": [
-                                        "arn:aws:dynamodb:*:*:table/Configs",
-                                        "arn:aws:dynamodb:*:*:table/Tests"
+                                        "arn:aws:dynamodb:*:*:table/awslack.configs",
+                                        "arn:aws:dynamodb:*:*:table/awslack.tests"
                                     ]
                                 }
                             ]
@@ -135,7 +135,7 @@
                     "ReadCapacityUnits": 10,
                     "WriteCapacityUnits": 1
                 },
-                "TableName": "Configs"
+                "TableName": "awslack.configs"
             }
         },
         "TestTable": {
@@ -157,7 +157,7 @@
                     "ReadCapacityUnits": 10,
                     "WriteCapacityUnits": 1
                 },
-                "TableName": "Tests"
+                "TableName": "awslack.tests"
             }
         },
         "InitializeDynamoDBFunction": {
