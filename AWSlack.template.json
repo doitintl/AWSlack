@@ -181,7 +181,10 @@
         },
         "AMIInfo": {
             "Type": "Custom::AMIInfo",
-            "DependsOn" : ["ConfigTable","TestTable"],
+            "DependsOn": [
+                "ConfigTable",
+                "TestTable"
+            ],
             "Properties": {
                 "ServiceToken": {
                     "Fn::GetAtt": [
