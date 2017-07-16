@@ -114,8 +114,9 @@ function sendSlack(channel, message, apiToken) {
     return new Promise((resolve, reject) => {
         const slack = new Slack(apiToken);
         slack.api('chat.postMessage', {
-            text: message,
-            channel: channel
+            text: message, 
+            channel: channel,
+            as_user	: true
         }, function (err, response) {
             if (!!err) {
                 reject(err);
