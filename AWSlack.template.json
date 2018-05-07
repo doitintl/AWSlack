@@ -96,7 +96,7 @@
             "Type": "AWS::Lambda::Function",
             "Properties": {
                 "Code": {
-                    "S3Bucket": "awslack",
+                    "S3Bucket": "awslack-cfn-template",
                     "S3Key": "source/code.zip"
                 },
                 "Description": "Handles events by sending Slack notifications.",
@@ -164,7 +164,7 @@
             "Type": "AWS::Lambda::Function",
             "Properties": {
                 "Code": {
-                    "S3Bucket": "awslack",
+                    "S3Bucket": "awslack-cfn-template",
                     "S3Key": "source/code.zip"
                 },
                 "Description": "Initializes DynamoDB",
@@ -179,11 +179,12 @@
                 "Runtime": "nodejs6.10"
             }
         },
-        "AMIInfo": {
-            "Type": "Custom::AMIInfo",
+        "TriggerDynamoDBInitialize": {
+            "Type": "Custom::TriggerDynamoDBInitialize",
             "DependsOn": [
                 "ConfigTable",
-                "TestTable"
+                "TestTable",
+                "InitializeDynamoDBFunction"
             ],
             "Properties": {
                 "ServiceToken": {
