@@ -27,3 +27,4 @@
 - Select the `awslack.tests` table and go to the `Items` tab.
 - You can change or delete the existing tests.
 - You can also add new tests.
+- Be sure to change the `slackChannel` attribute of each test to your target Slack channel. The default is `aws`.
