@@ -1,6 +1,23 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "AWSlack AWS CloudFormation Template: This template deploys Slack integration into your account Please see https://github.com/doitintl/AWSlack more information.  **WARNING** You will be billed for the AWS resources used if you create a stack from this template.",
+    "Parameters": {
+        "SlackAPIToken": {
+            "Type": "String",
+            "Description": "Slack Bot API Token in the form of 'xxxx-yyyyyyyyyyyy-zzzzzzzzzzzzzzzzzzzzzzzz'",
+            "MinLength": 42,
+            "MaxLength": 42,
+            "AllowedPattern": "^[a-z]{4}-\\d{12}-[a-zA-Z0-9]{24}$",
+            "NoEcho": true
+        },
+        "DefaultSlackChannel": {
+            "Type": "String",
+            "Description": "The bot will publish messages to this channel. You may publish different events to different channels by editing the 'awslack.tests' DynamoDB table for each 'test' Item",
+            "Default": "aws",
+            "MinLength": 1,
+            "MaxLength": 21
+        }
+    },
     "Resources": {
         "EventRule": {
             "Type": "AWS::Events::Rule",
@@ -192,6 +209,12 @@
                         "InitializeDynamoDBFunction",
                         "Arn"
                     ]
+                },
+                "SlackAPIToken": {
+                    "Ref": "SlackAPIToken"
+                },
+                "DefaultSlackChannel": {
+                    "Ref": "DefaultSlackChannel"
                 }
             }
         }
