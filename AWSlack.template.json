@@ -179,11 +179,12 @@
                 "Runtime": "nodejs6.10"
             }
         },
-        "AMIInfo": {
-            "Type": "Custom::AMIInfo",
+        "TriggerDynamoDBInitialize": {
+            "Type": "Custom::TriggerDynamoDBInitialize",
             "DependsOn": [
                 "ConfigTable",
-                "TestTable"
+                "TestTable",
+                "InitializeDynamoDBFunction"
             ],
             "Properties": {
                 "ServiceToken": {

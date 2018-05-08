@@ -16,6 +16,7 @@
 - Click `Add bot integration`.
 - Wait until the UI displays the `API Token` and copy the string (i.e. xxxx-yyyyyyyyyyyy-zzzzzzzzzzzzzzzzzzzzzzzz).
 - Keep this token for using in the next step.
+- Don't forget to invite your new bot to a channel by `@` mentioning it.
 
 ## Configure
 - Open your browser at [AWS DynamoDB Console](https://console.aws.amazon.com/dynamodb/home)
@@ -23,6 +24,7 @@
 - Select the `awslack.configs` table and go to the `Items` tab.
 - Edit the slackAPIToken and set the `value` to the slack API token created in the previous step.
 - Save the new value.
-- Select the `awslack.tests` table and go to the `Items tab.
+- Select the `awslack.tests` table and go to the `Items` tab.
 - You can change or delete the existing tests.
 - You can also add new tests.
+- Be sure to change the `slackChannel` attribute of each test to your target Slack channel. The default is `aws`.

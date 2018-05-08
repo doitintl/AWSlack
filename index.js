@@ -161,6 +161,8 @@ function sendResponse(event, context, responseStatus, responseData) {
         Data: responseData
     });
 
+    console.log("RESPONSE BODY:\n", responseBody);
+
     var https = require("https");
     var url = require("url");
 
@@ -176,11 +178,18 @@ function sendResponse(event, context, responseStatus, responseData) {
         }
     };
 
+    console.log("SENDING RESPONSE...\n");
+
     var request = https.request(options, function (response) {
+        console.log("STATUS: " + response.statusCode);
+        console.log("HEADERS: " + JSON.stringify(response.headers));
+        // Tell AWS Lambda that the function execution is done  
         context.done();
     });
 
     request.on("error", function (error) {
+        console.log("sendResponse Error:" + error);
+        // Tell AWS Lambda that the function execution is done  
         context.done();
     });
 
