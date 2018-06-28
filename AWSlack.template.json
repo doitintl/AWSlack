@@ -6,8 +6,8 @@
             "Type": "String",
             "Description": "Slack Bot API Token",
             "MinLength": 42,
-            "MaxLength": 54,
-            "AllowedPattern": "^[a-z]{4}(?:-\\d{11})?-\\d{12}-[a-zA-Z0-9]{24}$",
+            "MaxLength": 55,
+            "AllowedPattern": "^[a-z]{4}(?:-\\d{11,12})?-\\d{12}-[a-zA-Z0-9]{24}$",
             "NoEcho": true
         },
         "DefaultSlackChannel": {
